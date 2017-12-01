@@ -50,6 +50,12 @@ public class HelloController {
 
     @RequestMapping(value = "preflightInvocation2")
     public String preflightInvocation2(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        return "preflightInvocation";
+        return "preflightInvocation2";
+    }
+
+    @RequestMapping(value = "preflightInvocation3")
+    public String preflightInvocation3(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        httpServletResponse.addHeader("Access-Control-Allow-Origin", httpServletRequest.getHeader("Origin"));
+        return "preflightInvocation3";
     }
 }
