@@ -2,21 +2,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <title>简单的跨域请求2</title>
+    <title>预请求</title>
     <script type="text/javascript">
 
         var invocation = new XMLHttpRequest();
-        var url = 'http://localhost:8080/hello/simpleXSInvocation2';
+        var url = 'http://localhost:8080/hello/preflightInvocation';
         var invocationHistoryText;
+        var body = '<?xml version="1.0"?><person><name>Arun</name></person>';
 
         function callOtherDomain(){
             if(invocation)
             {
-                invocation.open('GET', url, true);
-                //有这个，会带上cookie
-                invocation.withCredentials = "true";
+                invocation.open('POST', url, true);
+                invocation.setRequestHeader('X-PINGARUNER', 'pingpong');
+                invocation.setRequestHeader('Content-Type',
+                        'application/xml');
                 invocation.onreadystatechange = handler;
-                invocation.send();
+                invocation.send(body);
             }
             else
             {
@@ -34,17 +36,21 @@
                 if (invocation.status == 200)
                 {
                     var response = invocation.responseText;
-                    var invocationHistory = response;//.getElementsByTagName('invocationHistory').item(0).firstChild.data;
-                    invocationHistoryText = document.createTextNode(invocationHistory);
+                    //var invocationHistory = response.getElementsByTagName('invocationHistory').item(0).firstChild.data;
+                    invocationHistoryText = document.createTextNode(response);
                     var textDiv = document.getElementById("textDiv");
                     textDiv.appendChild(invocationHistoryText);
 
                 }
                 else
-                    alert("Invocation Errors Occured");
+                {
+                    alert("Invocation Errors Occured " + invocation.readyState + " and the status is " + invocation.status);
+                }
             }
             else
+            {
                 console.log("currently the application is at" + invocation.readyState);
+            }
         }
 
     </script>
@@ -56,10 +62,10 @@
     </p>
 </form>
 <p id="intro">
-    这个页面主要使用Access Control缓解的跨站点XMLHttpRequest调用另一个域。 这是没有预检的简单场景，并且使用简单的HTTP GET来调用另一个域上的资源。
+    此页使用访问控制缓解的跨站点XMLHttpRequest将XML数据POST到另一个域。 这是预检方案，对另一个域上的资源的调用首先使用OPTIONS请求，然后是实际的POST请求。
 </p>
 <div id="textDiv">
-    跨域请求结果：<br>
+    结果：<br>
 </div>
 </body>
 </html>

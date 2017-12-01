@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>带cookie的跨域请求</title>
+    <script type="text/javascript">
+
+        var invocation = new XMLHttpRequest();
+        var url = 'http://localhost:8080/hello/simpleXSInvocationWithCookie';
+        var invocationHistoryText;
+
+        function callOtherDomain(){
+            if(invocation)
+            {
+                invocation.open('GET', url, true);
+                //有这个，会带上cookie
+                invocation.withCredentials = "true";
+                invocation.onreadystatechange = handler;
+                invocation.send();
+            }
+            else
+            {
+                invocationHistoryText = "No Invocation TookPlace At All";
+                var textNode = document.createTextNode(invocationHistoryText);
+                var textDiv = document.getElementById("textDiv");
+                textDiv.appendChild(textNode);
+            }
+
+        }
+        function handler(evtXHR)
+        {
+            if (invocation.readyState == 4)
+            {
+                if (invocation.status == 200)
+                {
+                    var response = invocation.responseText;
+                    var invocationHistory = response;//.getElementsByTagName('invocationHistory').item(0).firstChild.data;
+                    invocationHistoryText = document.createTextNode(invocationHistory);
+                    var textDiv = document.getElementById("textDiv");
+                    textDiv.appendChild(invocationHistoryText);
+
+                }
+                else
+                    alert("Invocation Errors Occured");
+            }
+            else
+                console.log("currently the application is at" + invocation.readyState);
+        }
+
+    </script>
+</head>
+<body>
+<form id="controlsToInvoke" action="">
+    <p>
+        <input type="button" value="Click to Invoke Another Site" onclick="callOtherDomain()" />
+    </p>
+</form>
+<p id="intro">
+    这个页面主要使用Access Control缓解的跨站点XMLHttpRequest调用另一个域。 这是没有预检的简单场景，并且使用简单的HTTP GET来调用另一个域上的资源。
+</p>
+<div id="textDiv">
+    跨域请求结果：<br>
+</div>
+</body>
+</html>
